@@ -117,8 +117,26 @@
   </div>
 
   <audio id="music" loop>
-    <source src="provider.mp3" type="audio/mpeg" />
-  </audio>
+  <source src="provider.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+window.addEventListener('load', () => {
+  const music = document.getElementById('music');
+
+  // Try immediately
+  music.play().catch(() => {
+    // If blocked, wait for ANY interaction
+    const start = () => {
+      music.play();
+      document.removeEventListener('click', start);
+      document.removeEventListener('touchstart', start);
+    };
+
+    document.addEventListener('click', start);
+    document.addEventListener('touchstart', start);
+  });
+});
 
   <script>
     const noBtn = document.getElementById('no');
