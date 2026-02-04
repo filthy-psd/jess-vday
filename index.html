@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Be My Valentine?</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #ffe6ec;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      text-align: center;
+      overflow: hidden;
+    }
+
+    .card {
+      background: white;
+      padding: 24px;
+      border-radius: 16px;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+      max-width: 420px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .vessel-img {
+      width: 100%;
+      border-radius: 12px;
+      margin-bottom: 10px;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      margin-top: 20px;
+    }
+
+    button {
+      padding: 10px 18px;
+      font-size: 16px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: transform 0.25s ease;
+    }
+
+    #yes {
+      background: #ff4d79;
+      color: white;
+    }
+
+    #no {
+      background: #cccccc;
+      position: relative;
+      transition: opacity 0.4s ease;
+    }
+
+    #message {
+      margin-top: 16px;
+      font-weight: bold;
+      display: none;
+      font-size: 20px;
+    }
+
+    #final {
+      display: none;
+      font-size: 22px;
+      margin-top: 16px;
+    }
+
+    .heart {
+      position: fixed;
+      pointer-events: none;
+      animation: fade 1.2s forwards;
+      font-size: 18px;
+    }
+
+    @keyframes fade {
+      from { opacity: 1; transform: translateY(0); }
+      to { opacity: 0; transform: translateY(-20px); }
+    }
+
+    @keyframes wobble {
+      0% { transform: scale(var(--s)) rotate(0deg); }
+      25% { transform: scale(var(--s)) rotate(3deg); }
+      50% { transform: scale(var(--s)) rotate(-3deg); }
+      75% { transform: scale(var(--s)) rotate(2deg); }
+      100% { transform: scale(var(--s)) rotate(0deg); }
+    }
+
+    .wobble {
+      animation: wobble 0.25s ease;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Jessica, will you be my Valentine?</h1>
+
+    <img class="vessel-img" src="https://i.etsystatic.com/20560522/r/il/9025c2/5301578780/il_1588xN.5301578780_c7cf.jpg" alt="Vessel from Sleep Token being romantic" />
+
+    <div class="buttons" id="btnBox">
+      <button id="yes" onclick="sayYes()">Yes</button>
+      <button id="no">No</button>
+    </div>
+
+    <div id="message">Yay!!! ❤️</div>
+    <div id="final">Screenshot this and send to David 💌</div>
+  </div>
+
+  <audio id="music" loop>
+    <source src="provider.mp3" type="audio/mpeg" />
+  </audio>
+
+  <script>
+    const noBtn = document.getElementById('no');
+    const yesBtn = document.getElementById('yes');
+    const music = document.getElementById('music');
+    const final = document.getElementById('final');
+
+    let yesScale = 1;
+    let popped = false;
+
+    function startMusic() {
+      music.play().catch(() => {});
+      document.removeEventListener('click', startMusic);
+      document.removeEventListener('touchstart', startMusic);
+    }
+    document.addEventListener('click', startMusic);
+    document.addEventListener('touchstart', startMusic);
+
+    function heartTrail(x, y) {
+      const h = document.createElement('div');
+      h.className = 'heart';
+      h.textContent = '💔';
+      h.style.left = x + 'px';
+      h.style.top = y + 'px';
+      document.body.appendChild(h);
+      setTimeout(() => h.remove(), 1200);
+    }
+
+    function doPop() {
+      popped = true;
+
+      // huge confetti burst
+      for (let i = 0; i < 5; i++) {
+        setTimeout(() => {
+          confetti({ particleCount: 160, spread: 90, origin: { y: 0.6 } });
+        }, i * 200);
+      }
+
+      // hide NO completely
+      noBtn.style.opacity = '0';
+      setTimeout(() => noBtn.style.display = 'none', 400);
+
+      // dramatic message
+      document.getElementById('message').textContent = 'It was always YES 💘';
+      document.getElementById('message').style.display = 'block';
+    }
+
+    function moveButton(e) {
+      if (popped) return;
+
+      const x = Math.random() * (window.innerWidth - 100);
+      const y = Math.random() * (window.innerHeight - 50);
+
+      noBtn.style.position = 'fixed';
+      noBtn.style.left = x + 'px';
+      noBtn.style.top = y + 'px';
+
+      // Inflate YES like an overfilled balloon
+      yesScale += 0.22;
+      yesBtn.style.setProperty('--s', yesScale);
+      yesBtn.classList.remove('wobble');
+      void yesBtn.offsetWidth;
+      yesBtn.classList.add('wobble');
+      yesBtn.style.transform = `scale(${yesScale})`;
+
+      // NO slowly fades as YES takes over
+      noBtn.style.opacity = Math.max(0, 1 - (yesScale - 1) / 4);
+
+      // broken heart trail
+      heartTrail(e.clientX || x, e.clientY || y);
+
+      // balloon pops if too big
+      if (yesScale > 2.6) {
+        doPop();
+      }
+    }
+
+    noBtn.addEventListener('mouseover', moveButton);
+    noBtn.addEventListener('click', moveButton);
+    noBtn.addEventListener('touchstart', moveButton);
+
+    function party() {
+      confetti({ particleCount: 120, spread: 70, origin: { y: 0.6 } });
+    }
+
+    function sayYes() {
+      document.getElementById('message').style.display = 'block';
+
+      party();
+      setTimeout(party, 400);
+      setTimeout(party, 800);
+
+      setTimeout(() => {
+        document.getElementById('btnBox').style.display = 'none';
+        final.style.display = 'block';
+      }, 1200);
+    }
+  </script>
+</body>
+</html>
