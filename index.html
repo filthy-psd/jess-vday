@@ -7,8 +7,8 @@
 
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background: #ffe6ec;
+      font-family: 'Arial', sans-serif;
+      background: radial-gradient(circle at top, #ffe6f0, #ffd6e6);
       display: flex;
       justify-content: center;
       align-items: center;
@@ -16,13 +16,18 @@
       margin: 0;
       overflow: hidden;
       text-align: center;
+      transition: background 1.2s ease;
+    }
+
+    body.dark {
+      background: radial-gradient(circle at top, #ff9bb8, #c2185b);
     }
 
     /* ---------- INTRO MODAL ---------- */
     .modal {
       position: fixed;
       inset: 0;
-      background: #ffe6ec;
+      background: linear-gradient(135deg, #ffb6c1, #ffe6f0);
       display: flex;
       justify-content: center;
       align-items: center;
@@ -31,23 +36,23 @@
 
     .modal-box {
       background: white;
-      padding: 40px;
-      border-radius: 20px;
+      padding: 60px 40px;
+      border-radius: 28px;
       width: 90%;
-      max-width: 600px;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-      animation: popIn 0.4s ease;
+      max-width: 680px;
+      box-shadow: 0 30px 60px rgba(0,0,0,0.25);
+      animation: popIn 0.5s ease;
     }
 
     .modal-box h2 {
-      font-size: 32px;
-      margin-bottom: 30px;
+      font-size: 44px;
+      margin-bottom: 40px;
     }
 
     .modal-box button {
-      padding: 16px 40px;
-      font-size: 20px;
-      border-radius: 14px;
+      padding: 22px 64px;
+      font-size: 22px;
+      border-radius: 20px;
       border: none;
       background: #ff4d79;
       color: white;
@@ -62,113 +67,154 @@
     /* ---------- CARD ---------- */
     .card {
       background: white;
-      padding: 24px;
-      border-radius: 20px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-      max-width: 420px;
+      padding: 30px;
+      border-radius: 30px;
+      box-shadow: 0 18px 45px rgba(0,0,0,0.2);
+      max-width: 480px;
       z-index: 2;
+      position: relative;
+    }
+
+    h1 {
+      margin-bottom: 14px;
+      transition: all 0.6s ease;
     }
 
     .vessel-img {
       width: 100%;
-      border-radius: 14px;
-      margin-bottom: 14px;
+      border-radius: 26px;
+      margin-bottom: 8px;
       transition: opacity 0.6s ease;
     }
 
     /* ---------- BUTTONS ---------- */
     .buttons {
       display: flex;
-      gap: 18px;
+      gap: 6px;
       justify-content: center;
-      margin-top: 24px;
+      margin-top: 10px;
     }
 
     button {
-      width: 170px;
-      height: 60px;
-      font-size: 18px;
+      width: 210px;
+      height: 74px;
+      font-size: 22px;
       border: none;
-      border-radius: 16px;
+      border-radius: 26px;
       cursor: pointer;
       transition: transform 0.25s ease, opacity 0.4s ease;
     }
 
     #yes {
-      background: #ff4d79;
+      background: linear-gradient(135deg, #ff4d79, #ff85a2);
       color: white;
     }
 
     #no {
-      background: #d0d0d0;
+      background: #d9d9d9;
       position: relative;
     }
 
     /* ---------- TEXT ---------- */
     #message {
       display: none;
-      font-size: 22px;
+      font-size: 28px;
       margin-top: 18px;
       font-weight: bold;
     }
 
     #final {
       display: none;
-      font-size: 26px;
-      margin-top: 20px;
-      animation: heartbeat 1.2s infinite;
+      font-size: 30px;
+      margin-top: 22px;
+      animation: heartbeat 0.96s infinite;
+    }
+
+    #final small {
+      display: block;
+      font-size: 20px;
+      margin-top: 10px;
+      opacity: 0.9;
     }
 
     @keyframes heartbeat {
       0% { transform: scale(1); }
-      20% { transform: scale(1.05); }
-      40% { transform: scale(1); }
-      60% { transform: scale(1.08); }
+      30% { transform: scale(1.08); }
+      55% { transform: scale(1); }
+      75% { transform: scale(1.12); }
       100% { transform: scale(1); }
     }
 
-    /* ---------- EFFECTS ---------- */
-    .rose {
+    /* ---------- FALLING HEARTS ---------- */
+    .fall-heart {
       position: fixed;
       top: -40px;
       font-size: 24px;
-      animation: fall 3s linear forwards;
+      opacity: 0.8;
+      animation: heartFall 5s linear forwards;
       pointer-events: none;
     }
 
-    @keyframes fall {
+    @keyframes heartFall {
+      to { transform: translateY(110vh); opacity: 0; }
+    }
+
+    /* ---------- ROSE PETALS ---------- */
+    .petal {
+      position: fixed;
+      top: -40px;
+      width: 16px;
+      height: 22px;
+      background: radial-gradient(circle at 30% 30%, #ff7a9c, #c2185b);
+      border-radius: 60% 40% 60% 40%;
+      transform: rotate(20deg);
+      animation: petalFall 4s linear forwards;
+      pointer-events: none;
+    }
+
+    @keyframes petalFall {
       to { transform: translateY(110vh) rotate(360deg); opacity: 0; }
     }
 
-    .heart {
+    /* ---------- NO CHAOS ---------- */
+    .trail {
       position: fixed;
       pointer-events: none;
-      animation: fade 1.2s forwards;
-      font-size: 20px;
+      animation: fade 1.4s forwards;
+      font-size: 32px;
     }
 
     @keyframes fade {
-      from { opacity: 1; transform: translateY(0); }
-      to { opacity: 0; transform: translateY(-20px); }
+      from { opacity: 1; transform: translateY(0) scale(1); }
+      to { opacity: 0; transform: translateY(-30px) scale(1.6); }
     }
 
-    @keyframes wobble {
-      0% { transform: scale(var(--s)) rotate(0deg); }
-      25% { transform: scale(var(--s)) rotate(4deg); }
-      50% { transform: scale(var(--s)) rotate(-4deg); }
-      75% { transform: scale(var(--s)) rotate(3deg); }
-      100% { transform: scale(var(--s)) rotate(0deg); }
+    .dash { animation: dash 0.35s cubic-bezier(.17,.67,.83,.67); }
+
+    @keyframes dash {
+      from { transform: translate(0,0) rotate(0deg); }
+      to { transform: translate(100px,-80px) rotate(35deg); }
     }
 
-    .wobble { animation: wobble 0.25s ease; }
-
-    .glide {
-      animation: glide 0.3s ease;
+    .trip {
+      animation: trip 0.6s ease forwards;
     }
 
-    @keyframes glide {
-      from { transform: translate(0,0); }
-      to { transform: translate(50px,-40px) rotate(12deg); }
+    @keyframes trip {
+      0% { transform: rotate(0deg); }
+      40% { transform: rotate(20deg); }
+      100% { transform: rotate(90deg) translateY(200px); opacity: 0; }
+    }
+
+    /* ---------- YES POP ---------- */
+    .pop {
+      animation: pop 0.4s ease forwards;
+    }
+
+    @keyframes pop {
+      0% { transform: scale(var(--s)); }
+      70% { transform: scale(1.6); opacity: 1; }
+      100% { transform: scale(0); opacity: 0; }
     }
   </style>
 </head>
@@ -183,91 +229,105 @@
   </div>
 
   <div class="card">
-    <h1>Jessica, will you be my Valentine?</h1>
+    <h1 id="titleText">Jessica, will you be my Valentine?</h1>
 
-    <img
-      id="mainImg"
-      class="vessel-img"
-      src="https://i.etsystatic.com/20560522/r/il/9025c2/5301578780/il_1588xN.5301578780_c7cf.jpg"
-      alt="romantic image"
-    />
+    <img id="mainImg" class="vessel-img" src="https://i.etsystatic.com/20560522/r/il/9025c2/5301578780/il_1588xN.5301578780_c7cf.jpg" />
 
     <div class="buttons" id="btnBox">
       <button id="yes">YESS 💖🥰💖</button>
       <button id="no">NOoo 🥀🤡🥀</button>
     </div>
 
-    <div id="message">Yay!!! ❤️</div>
-    <div id="final">Screenshot this and send to David 💌</div>
+    <div id="message">YESSS!!!😭💖</div>
+    <div id="final">You belong to me now 😈🖤<small>Screenshot this and send to David 💌</small></div>
   </div>
 
-  <!-- MUSIC (file must be named provider.mp3) -->
+  <!-- MUSIC (DO NOT CHANGE) -->
   <audio id="music" loop preload="auto">
     <source src="provider.mp3" type="audio/mpeg" />
   </audio>
 
   <script>
-    /* ---------- MUSIC ---------- */
     const music = document.getElementById('music');
     const modal = document.getElementById('introModal');
+    const body = document.body;
 
     document.getElementById('startBtn').addEventListener('click', () => {
       modal.style.display = 'none';
       music.play().catch(() => {});
+      startHearts();
     });
 
-    /* ---------- ELEMENTS ---------- */
+    /* ---------- HEART FALL ---------- */
+    function startHearts() {
+      setInterval(() => {
+        const h = document.createElement('div');
+        h.className = 'fall-heart';
+        h.textContent = '💖';
+        h.style.left = Math.random() * 100 + 'vw';
+        h.style.animationDuration = 4 + Math.random() * 3 + 's';
+        document.body.appendChild(h);
+        setTimeout(() => h.remove(), 7000);
+      }, 600);
+    }
+
     const noBtn = document.getElementById('no');
     const yesBtn = document.getElementById('yes');
     const img = document.getElementById('mainImg');
     const final = document.getElementById('final');
+    const title = document.getElementById('titleText');
 
     let yesScale = 1;
+    let noCount = 0;
     let popped = false;
 
-    function roseRain(count = 15) {
+    function petalRain(count = 30) {
       for (let i = 0; i < count; i++) {
-        const r = document.createElement('div');
-        r.className = 'rose';
-        r.textContent = '🌹';
-        r.style.left = Math.random() * 100 + 'vw';
-        r.style.animationDuration = 2 + Math.random() * 2 + 's';
-        document.body.appendChild(r);
-        setTimeout(() => r.remove(), 4000);
+        const p = document.createElement('div');
+        p.className = 'petal';
+        p.style.left = Math.random() * 100 + 'vw';
+        p.style.animationDuration = 3 + Math.random() * 2 + 's';
+        document.body.appendChild(p);
+        setTimeout(() => p.remove(), 5000);
       }
     }
 
-    function heartTrail(x, y) {
-      const h = document.createElement('div');
-      h.className = 'heart';
-      h.textContent = '💔';
-      h.style.left = x + 'px';
-      h.style.top = y + 'px';
-      document.body.appendChild(h);
-      setTimeout(() => h.remove(), 1200);
+    function trail(x, y) {
+      const emojis = ['💔','💩','💨'];
+      const t = document.createElement('div');
+      t.className = 'trail';
+      t.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+      t.style.left = x + 'px';
+      t.style.top = y + 'px';
+      document.body.appendChild(t);
+      setTimeout(() => t.remove(), 1400);
     }
 
     function moveNo(e) {
       if (popped) return;
 
-      const x = Math.random() * (window.innerWidth - 200);
-      const y = Math.random() * (window.innerHeight - 120);
+      noCount++;
+
+      const x = Math.random() * (window.innerWidth - 240);
+      const y = Math.random() * (window.innerHeight - 180);
 
       noBtn.style.position = 'fixed';
-      noBtn.classList.remove('glide');
+      noBtn.classList.remove('dash');
       void noBtn.offsetWidth;
-      noBtn.classList.add('glide');
+      noBtn.classList.add('dash');
       noBtn.style.left = x + 'px';
       noBtn.style.top = y + 'px';
 
-      yesScale += 0.25;
+      yesScale += 0.32;
       yesBtn.style.setProperty('--s', yesScale);
-      yesBtn.classList.remove('wobble');
-      void yesBtn.offsetWidth;
-      yesBtn.classList.add('wobble');
       yesBtn.style.transform = `scale(${yesScale})`;
 
-      heartTrail(e.clientX || x, e.clientY || y);
+      trail(e.clientX || x, e.clientY || y);
+
+      if (noCount >= 6) {
+        noBtn.classList.add('trip');
+        popped = true;
+      }
     }
 
     noBtn.addEventListener('mouseover', moveNo);
@@ -277,21 +337,27 @@
     yesBtn.addEventListener('click', () => {
       popped = true;
 
+      body.classList.add('dark');
+      title.textContent = 'WORSHIP ACCEPTED';
+
+      yesBtn.style.setProperty('--s', yesScale);
+      yesBtn.classList.add('pop');
+
       img.style.opacity = '0';
       setTimeout(() => {
         img.src = 'https://preview.redd.it/st-valentines-v0-lu6sz7yxi9ic1.png?width=1080&crop=smart&auto=webp&s=5e5d3d5d9a85c7e37beb7bcbf85789221527e472';
         img.style.opacity = '1';
       }, 600);
 
-      roseRain(30);
-      setTimeout(() => roseRain(30), 500);
+      petalRain(40);
+      setTimeout(() => petalRain(40), 600);
 
       document.getElementById('message').style.display = 'block';
 
       setTimeout(() => {
         document.getElementById('btnBox').style.display = 'none';
         final.style.display = 'block';
-      }, 1400);
+      }, 1600);
     });
   </script>
 </body>
