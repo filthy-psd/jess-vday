@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Be My Valentine?</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #ffe6ec;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      overflow: hidden;
+      text-align: center;
+    }
+
+    /* ---------- INTRO MODAL ---------- */
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: #ffe6ec;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 10;
+    }
+
+    .modal-box {
+      background: white;
+      padding: 40px;
+      border-radius: 20px;
+      width: 90%;
+      max-width: 600px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+      animation: popIn 0.4s ease;
+    }
+
+    .modal-box h2 {
+      font-size: 32px;
+      margin-bottom: 30px;
+    }
+
+    .modal-box button {
+      padding: 16px 40px;
+      font-size: 20px;
+      border-radius: 14px;
+      border: none;
+      background: #ff4d79;
+      color: white;
+      cursor: pointer;
+    }
+
+    @keyframes popIn {
+      from { transform: scale(0.85); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    /* ---------- CARD ---------- */
+    .card {
+      background: white;
+      padding: 24px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+      max-width: 420px;
+      z-index: 2;
+    }
+
+    .vessel-img {
+      width: 100%;
+      border-radius: 14px;
+      margin-bottom: 14px;
+      transition: opacity 0.6s ease;
+    }
+
+    /* ---------- BUTTONS ---------- */
+    .buttons {
+      display: flex;
+      gap: 18px;
+      justify-content: center;
+      margin-top: 24px;
+    }
+
+    button {
+      width: 170px;
+      height: 60px;
+      font-size: 18px;
+      border: none;
+      border-radius: 16px;
+      cursor: pointer;
+      transition: transform 0.25s ease, opacity 0.4s ease;
+    }
+
+    #yes {
+      background: #ff4d79;
+      color: white;
+    }
+
+    #no {
+      background: #d0d0d0;
+      position: relative;
+    }
+
+    /* ---------- TEXT ---------- */
+    #message {
+      display: none;
+      font-size: 22px;
+      margin-top: 18px;
+      font-weight: bold;
+    }
+
+    #final {
+      display: none;
+      font-size: 26px;
+      margin-top: 20px;
+      animation: heartbeat 1.2s infinite;
+    }
+
+    @keyframes heartbeat {
+      0% { transform: scale(1); }
+      20% { transform: scale(1.05); }
+      40% { transform: scale(1); }
+      60% { transform: scale(1.08); }
+      100% { transform: scale(1); }
+    }
+
+    /* ---------- EFFECTS ---------- */
+    .rose {
+      position: fixed;
+      top: -40px;
+      font-size: 24px;
+      animation: fall 3s linear forwards;
+      pointer-events: none;
+    }
+
+    @keyframes fall {
+      to { transform: translateY(110vh) rotate(360deg); opacity: 0; }
+    }
+
+    .heart {
+      position: fixed;
+      pointer-events: none;
+      animation: fade 1.2s forwards;
+      font-size: 20px;
+    }
+
+    @keyframes fade {
+      from { opacity: 1; transform: translateY(0); }
+      to { opacity: 0; transform: translateY(-20px); }
+    }
+
+    @keyframes wobble {
+      0% { transform: scale(var(--s)) rotate(0deg); }
+      25% { transform: scale(var(--s)) rotate(4deg); }
+      50% { transform: scale(var(--s)) rotate(-4deg); }
+      75% { transform: scale(var(--s)) rotate(3deg); }
+      100% { transform: scale(var(--s)) rotate(0deg); }
+    }
+
+    .wobble { animation: wobble 0.25s ease; }
+
+    .glide {
+      animation: glide 0.3s ease;
+    }
+
+    @keyframes glide {
+      from { transform: translate(0,0); }
+      to { transform: translate(50px,-40px) rotate(12deg); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- INTRO MODAL -->
+  <div class="modal" id="introModal">
+    <div class="modal-box">
+      <h2>I have a question 👉👈</h2>
+      <button id="startBtn">okay…</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h1>Jessica, will you be my Valentine?</h1>
+
+    <img
+      id="mainImg"
+      class="vessel-img"
+      src="https://i.etsystatic.com/20560522/r/il/9025c2/5301578780/il_1588xN.5301578780_c7cf.jpg"
+      alt="romantic image"
+    />
+
+    <div class="buttons" id="btnBox">
+      <button id="yes">YESS 💖🥰💖</button>
+      <button id="no">NOoo 🥀🤡🥀</button>
+    </div>
+
+    <div id="message">Yay!!! ❤️</div>
+    <div id="final">Screenshot this and send to David 💌</div>
+  </div>
+
+  <!-- MUSIC (file must be named provider.mp3) -->
+  <audio id="music" loop preload="auto">
+    <source src="provider.mp3" type="audio/mpeg" />
+  </audio>
+
+  <script>
+    /* ---------- MUSIC ---------- */
+    const music = document.getElementById('music');
+    const modal = document.getElementById('introModal');
+
+    document.getElementById('startBtn').addEventListener('click', () => {
+      modal.style.display = 'none';
+      music.play().catch(() => {});
+    });
+
+    /* ---------- ELEMENTS ---------- */
+    const noBtn = document.getElementById('no');
+    const yesBtn = document.getElementById('yes');
+    const img = document.getElementById('mainImg');
+    const final = document.getElementById('final');
+
+    let yesScale = 1;
+    let popped = false;
+
+    function roseRain(count = 15) {
+      for (let i = 0; i < count; i++) {
+        const r = document.createElement('div');
+        r.className = 'rose';
+        r.textContent = '🌹';
+        r.style.left = Math.random() * 100 + 'vw';
+        r.style.animationDuration = 2 + Math.random() * 2 + 's';
+        document.body.appendChild(r);
+        setTimeout(() => r.remove(), 4000);
+      }
+    }
+
+    function heartTrail(x, y) {
+      const h = document.createElement('div');
+      h.className = 'heart';
+      h.textContent = '💔';
+      h.style.left = x + 'px';
+      h.style.top = y + 'px';
+      document.body.appendChild(h);
+      setTimeout(() => h.remove(), 1200);
+    }
+
+    function moveNo(e) {
+      if (popped) return;
+
+      const x = Math.random() * (window.innerWidth - 200);
+      const y = Math.random() * (window.innerHeight - 120);
+
+      noBtn.style.position = 'fixed';
+      noBtn.classList.remove('glide');
+      void noBtn.offsetWidth;
+      noBtn.classList.add('glide');
+      noBtn.style.left = x + 'px';
+      noBtn.style.top = y + 'px';
+
+      yesScale += 0.25;
+      yesBtn.style.setProperty('--s', yesScale);
+      yesBtn.classList.remove('wobble');
+      void yesBtn.offsetWidth;
+      yesBtn.classList.add('wobble');
+      yesBtn.style.transform = `scale(${yesScale})`;
+
+      heartTrail(e.clientX || x, e.clientY || y);
+    }
+
+    noBtn.addEventListener('mouseover', moveNo);
+    noBtn.addEventListener('click', moveNo);
+    noBtn.addEventListener('touchstart', moveNo);
+
+    yesBtn.addEventListener('click', () => {
+      popped = true;
+
+      img.style.opacity = '0';
+      setTimeout(() => {
+        img.src = 'https://preview.redd.it/st-valentines-v0-lu6sz7yxi9ic1.png?width=1080&crop=smart&auto=webp&s=5e5d3d5d9a85c7e37beb7bcbf85789221527e472';
+        img.style.opacity = '1';
+      }, 600);
+
+      roseRain(30);
+      setTimeout(() => roseRain(30), 500);
+
+      document.getElementById('message').style.display = 'block';
+
+      setTimeout(() => {
+        document.getElementById('btnBox').style.display = 'none';
+        final.style.display = 'block';
+      }, 1400);
+    });
+  </script>
+</body>
+</html>
