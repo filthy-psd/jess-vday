@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Be My Valentine?</title>
 
-  <!-- Confetti -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
   <style>
@@ -34,6 +33,7 @@
       width: 100%;
       border-radius: 12px;
       margin-bottom: 12px;
+      transition: opacity 0.6s ease;
     }
 
     .buttons {
@@ -82,6 +82,30 @@
       font-size: 18px;
     }
 
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 5;
+    }
+
+    .modal-box {
+      background: white;
+      padding: 24px 28px;
+      border-radius: 16px;
+      text-align: center;
+      max-width: 300px;
+      animation: popIn 0.4s ease;
+    }
+
+    @keyframes popIn {
+      from { transform: scale(0.8); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
     @keyframes fade {
       from { opacity: 1; transform: translateY(0); }
       to { opacity: 0; transform: translateY(-20px); }
@@ -89,65 +113,69 @@
 
     @keyframes wobble {
       0% { transform: scale(var(--s)) rotate(0deg); }
-      25% { transform: scale(var(--s)) rotate(3deg); }
-      50% { transform: scale(var(--s)) rotate(-3deg); }
-      75% { transform: scale(var(--s)) rotate(2deg); }
+      25% { transform: scale(var(--s)) rotate(4deg); }
+      50% { transform: scale(var(--s)) rotate(-4deg); }
+      75% { transform: scale(var(--s)) rotate(3deg); }
       100% { transform: scale(var(--s)) rotate(0deg); }
     }
 
-    .wobble {
-      animation: wobble 0.25s ease;
+    @keyframes glide {
+      0% { transform: translate(0,0) rotate(0deg); }
+      100% { transform: translate(40px,-30px) rotate(10deg); }
     }
+
+    .wobble { animation: wobble 0.25s ease; }
+    .glide { animation: glide 0.3s ease; }
   </style>
 </head>
 <body>
+
+  <!-- MODAL -->
+  <div class="modal" id="introModal">
+    <div class="modal-box">
+      <h2>I have a question 👉👈</h2>
+      <button onclick="closeModal()">okay…</button>
+    </div>
+  </div>
 
   <div class="card">
     <h1>Jessica, will you be my Valentine?</h1>
 
     <img
+      id="mainImg"
       class="vessel-img"
       src="https://i.etsystatic.com/20560522/r/il/9025c2/5301578780/il_1588xN.5301578780_c7cf.jpg"
-      alt="Vessel from Sleep Token"
+      alt="romantic image"
     />
 
     <div class="buttons" id="btnBox">
-      <button id="yes">Yes</button>
-      <button id="no">No</button>
+      <button id="yes">YESSS 🌹🌹🌹</button>
+      <button id="no">no 🥀</button>
     </div>
 
     <div id="message">Yay!!! ❤️</div>
     <div id="final">Screenshot this and send to David 💌</div>
   </div>
 
-  <!-- MUSIC: file must be in same repo -->
   <audio id="music" loop preload="auto">
     <source src="provider.mp3" type="audio/mpeg" />
   </audio>
 
   <script>
-    /* ---------- MUSIC ---------- */
     const music = document.getElementById('music');
-
-    const enableMusic = () => {
-      music.play().then(() => {
-        document.removeEventListener('click', enableMusic);
-        document.removeEventListener('touchstart', enableMusic);
-        document.removeEventListener('keydown', enableMusic);
-      }).catch(() => {});
-    };
-
-    document.addEventListener('click', enableMusic);
-    document.addEventListener('touchstart', enableMusic);
-    document.addEventListener('keydown', enableMusic);
-
-    /* ---------- BUTTON LOGIC ---------- */
+    const modal = document.getElementById('introModal');
     const noBtn = document.getElementById('no');
     const yesBtn = document.getElementById('yes');
+    const img = document.getElementById('mainImg');
     const final = document.getElementById('final');
 
     let yesScale = 1;
     let popped = false;
+
+    function closeModal() {
+      modal.style.display = 'none';
+      music.play().catch(() => {});
+    }
 
     function heartTrail(x, y) {
       const h = document.createElement('div');
@@ -159,29 +187,16 @@
       setTimeout(() => h.remove(), 1200);
     }
 
-    function doPop() {
-      popped = true;
-
-      for (let i = 0; i < 5; i++) {
-        setTimeout(() => {
-          confetti({ particleCount: 160, spread: 90, origin: { y: 0.6 } });
-        }, i * 200);
-      }
-
-      noBtn.style.opacity = '0';
-      setTimeout(() => noBtn.style.display = 'none', 400);
-
-      document.getElementById('message').textContent = 'It was always YES 💘';
-      document.getElementById('message').style.display = 'block';
-    }
-
     function moveNo(e) {
       if (popped) return;
 
-      const x = Math.random() * (window.innerWidth - 100);
-      const y = Math.random() * (window.innerHeight - 50);
+      const x = Math.random() * (window.innerWidth - 120);
+      const y = Math.random() * (window.innerHeight - 80);
 
       noBtn.style.position = 'fixed';
+      noBtn.classList.remove('glide');
+      void noBtn.offsetWidth;
+      noBtn.classList.add('glide');
       noBtn.style.left = x + 'px';
       noBtn.style.top = y + 'px';
 
@@ -192,10 +207,19 @@
       yesBtn.classList.add('wobble');
       yesBtn.style.transform = `scale(${yesScale})`;
 
-      noBtn.style.opacity = Math.max(0, 1 - (yesScale - 1) / 4);
       heartTrail(e.clientX || x, e.clientY || y);
 
-      if (yesScale > 2.6) doPop();
+      if (yesScale > 2.6) popYes();
+    }
+
+    function popYes() {
+      popped = true;
+      for (let i = 0; i < 5; i++) {
+        setTimeout(() => confetti({ particleCount: 160, spread: 90, origin: { y: 0.6 } }), i * 200);
+      }
+      noBtn.style.opacity = '0';
+      setTimeout(() => noBtn.style.display = 'none', 400);
+      document.getElementById('message').style.display = 'block';
     }
 
     noBtn.addEventListener('mouseover', moveNo);
@@ -203,7 +227,11 @@
     noBtn.addEventListener('touchstart', moveNo);
 
     yesBtn.addEventListener('click', () => {
-      document.getElementById('message').style.display = 'block';
+      img.style.opacity = '0';
+      setTimeout(() => {
+        img.src = 'https://preview.redd.it/st-valentines-v0-lu6sz7yxi9ic1.png?width=1080&crop=smart&auto=webp&s=5e5d3d5d9a85c7e37beb7bcbf85789221527e472';
+        img.style.opacity = '1';
+      }, 600);
 
       confetti({ particleCount: 120, spread: 70, origin: { y: 0.6 } });
       setTimeout(() => confetti({ particleCount: 120, spread: 70, origin: { y: 0.6 } }), 400);
